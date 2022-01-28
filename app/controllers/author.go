@@ -83,7 +83,7 @@ func (this *AuthorController) Login() {
 	this.Ctx.Request.PostForm.Del("password")
 
 	this.InfoLog("登录成功")
-	this.jsonSuccess("登录成功！", nil, "/main/index")
+	this.jsonSuccess("登录成功！", nil, "/space/index")
 }
 
 // auth login
@@ -175,7 +175,7 @@ func (this *AuthorController) AuthLogin() {
 	this.Ctx.Request.PostForm.Del("password")
 
 	this.InfoLog("登录成功")
-	this.jsonSuccess("登录成功！", nil, "/main/index")
+	this.jsonSuccess("登录成功！", nil, "/space/index")
 }
 
 //logout
