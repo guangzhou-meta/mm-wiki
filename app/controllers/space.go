@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -157,13 +158,13 @@ func (this *SpaceController) AddMember() {
 		this.ViewError("请求方式有误！", "/space/index")
 	}
 	spaceId := strings.TrimSpace(this.GetString("space_id", ""))
-	userId := this.GetString("user_id", "")
+	userIds := this.GetStrings("user_id")
 	privilege := strings.TrimSpace(this.GetString("privilege", "0"))
 
 	if spaceId == "" {
 		this.jsonError("空间不存在！")
 	}
-	if userId == "" {
+	if len(userIds) == 0 {
 		this.jsonError("没有选择用户！")
 	}
 	if privilege == "" {
@@ -184,30 +185,44 @@ func (this *SpaceController) AddMember() {
 		this.jsonError("您没有权限添加该空间成员！", "/space/index")
 	}
 
-	spaceUser, err := models.SpaceUserModel.GetSpaceUserBySpaceIdAndUserId(spaceId, userId)
-	if err != nil {
-		this.ErrorLog("添加空间 " + spaceId + " 成员 " + userId + " 失败: " + err.Error())
-		this.jsonError("添加空间成员失败！")
+	var failIds []string
+	failIdSet := map[string]interface{}{}
+	insertFailId := func(userId string) {
+		if _, ok := failIdSet[userId]; !ok {
+			failIds = append(failIds, userId)
+		}
+		failIdSet[userId] = nil
 	}
-	if len(spaceUser) > 0 {
-		this.jsonError("该用户已经是空间成员！")
+	for _, userId := range userIds {
+		spaceUser, err := models.SpaceUserModel.GetSpaceUserBySpaceIdAndUserId(spaceId, userId)
+		if err != nil {
+			this.ErrorLog("添加空间 " + spaceId + " 成员 " + userId + " 失败: " + err.Error())
+			//this.jsonError("添加空间成员失败！")
+			insertFailId(userId)
+		}
+		if len(spaceUser) > 0 {
+			//this.jsonError("该用户已经是空间成员！")
+			insertFailId(userId)
+		}
+
+		insertValue := map[string]interface{}{
+			"user_id":     userId,
+			"space_id":    spaceId,
+			"privilege":   privilege,
+			"create_time": time.Now().Unix(),
+			"update_time": time.Now().Unix(),
+		}
+		_, err = models.SpaceUserModel.Insert(insertValue)
+		if err != nil {
+			this.ErrorLog("添加空间 " + spaceId + " 成员 " + userId + " 失败: " + err.Error())
+			//this.jsonError("添加成员失败！")
+			insertFailId(userId)
+		}
+
+		this.InfoLog("空间 " + spaceId + " 添加成员 " + userId + " 成功")
 	}
 
-	insertValue := map[string]interface{}{
-		"user_id":     userId,
-		"space_id":    spaceId,
-		"privilege":   privilege,
-		"create_time": time.Now().Unix(),
-		"update_time": time.Now().Unix(),
-	}
-	_, err = models.SpaceUserModel.Insert(insertValue)
-	if err != nil {
-		this.ErrorLog("添加空间 " + spaceId + " 成员 " + userId + " 失败: " + err.Error())
-		this.jsonError("添加成员失败！")
-	}
-
-	this.InfoLog("空间 " + spaceId + " 添加成员 " + userId + " 成功")
-	this.jsonSuccess("添加成员成功！", nil, "/space/member?space_id="+spaceId)
+	this.jsonSuccess(fmt.Sprintf("添加成员完成！(其中 %s 添加失败)", strings.Join(failIds, "、")), nil, "/space/member?space_id="+spaceId)
 }
 
 func (this *SpaceController) RemoveMember() {

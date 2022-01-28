@@ -19,7 +19,6 @@
                         <div class="input-group">
                             <select name="user_id" class="form-control selectpicker show-menu-arrow"
                                     multiple data-live-search="true"
-                                    data-max-options="1"
                                     title="选择要添加的成员">
                             {{range $otherUser := $otherUsers}}
                                 <option title="{{$otherUser.username}}({{$otherUser.given_name}})" value="{{$otherUser.user_id}}">{{$otherUser.username}}({{$otherUser.given_name}})</option>
@@ -85,3 +84,8 @@
        });
     });
 </script>
+<style>
+    .bootstrap-select{
+        max-width: 240px;
+    }
+</style>
