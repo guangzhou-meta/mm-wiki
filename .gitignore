@@ -8,6 +8,7 @@ mm-wiki
 *.session/
 .mmwiki.sessions/
 conf/mm-wiki.conf
+conf/default.conf
 mm-wiki.conf
 release/
 release-*
