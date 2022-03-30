@@ -4597,7 +4597,7 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 }
 .navbar-inverse .navbar-brand:hover,
 .navbar-inverse .navbar-brand:focus {
-  color: #fff;
+  color: #ff6a00;
   background-color: transparent;
 }
 .navbar-inverse .navbar-text {
@@ -6755,3 +6755,7 @@ button.close {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
+
+* {
+  font-family:"微软雅黑" !important;
+}
