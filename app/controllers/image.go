@@ -8,6 +8,7 @@ import (
 	"github.com/phachon/mm-wiki/app/utils"
 	"os"
 	"path"
+	"strings"
 )
 
 type UploadResponse struct {
@@ -81,10 +82,13 @@ func (this *ImageController) Upload() {
 		}
 	}
 	// check file is exists
-	imageFile := path.Join(saveDir, h.Filename)
+	cacheFileName := h.Filename
+	imageFile := path.Join(saveDir, cacheFileName)
 	ok, _ = utils.File.PathIsExists(imageFile)
-	if ok {
-		this.jsonError("该图片已经上传过！")
+	if ok { // 直接返回对应地址
+		//this.jsonError("该图片已经上传过！")
+		result := fmt.Sprintf("images/%s/%s/%s", spaceId, documentId, cacheFileName)
+		uploadSuccessResponse(this, result)
 	}
 	// save file
 	err = this.SaveToFile("editormd-image-file", imageFile)
@@ -97,8 +101,8 @@ func (this *ImageController) Upload() {
 	attachment := map[string]interface{}{
 		"user_id":     this.UserId,
 		"document_id": documentId,
-		"name":        h.Filename,
-		"path":        fmt.Sprintf("images/%s/%s/%s", spaceId, documentId, h.Filename),
+		"name":        cacheFileName,
+		"path":        fmt.Sprintf("images/%s/%s/%s", spaceId, documentId, cacheFileName),
 		"source":      models.Attachment_Source_Image,
 	}
 	_, err = models.AttachmentModel.Insert(attachment, spaceId)
@@ -108,8 +112,16 @@ func (this *ImageController) Upload() {
 		this.jsonError("图片信息保存失败")
 	}
 
-	this.InfoLog(fmt.Sprintf("文档 %s 上传图片 %s 成功", documentId, h.Filename))
-	this.jsonSuccess("上传成功", fmt.Sprintf("/%s", attachment["path"]))
+	this.InfoLog(fmt.Sprintf("文档 %s 上传图片 %s 成功", documentId, cacheFileName))
+	result := attachment["path"]
+	uploadSuccessResponse(this, result.(string))
+}
+
+func uploadSuccessResponse(this *ImageController, result string) {
+	result = strings.ReplaceAll(result, "(", "%28")
+	result = strings.ReplaceAll(result, ")", "%29")
+	result = strings.ReplaceAll(result, " ", "%20")
+	this.jsonSuccess("该图片已经上传过", fmt.Sprintf("/%s", result))
 }
 
 func (this *ImageController) jsonError(message string) {

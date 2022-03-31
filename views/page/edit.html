@@ -29,12 +29,48 @@
         parent.hiddenScrollY();
     }
     var storageId = "mm_wiki_doc_"+{{$document.document_id}}
+
+    document.removeEventListener('paste', window.uploadImage);
+    if(!window.uploadImage) {
+        window.uploadImage = function (e){
+            let file = null;
+            const items = (e.clipboardData || window.clipboardData).items;
+            if (items && items.length) {
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        file = items[i].getAsFile();
+                        break;
+                    }
+                }
+            }
+            if (file) {
+                var f = new FormData()
+                f.append('editormd-image-file', file)
+                $.ajax({
+                    url: "/image/upload?document_id={{$document.document_id}}",
+                    type: 'POST',
+                    cache: false,
+                    data: f,
+                    processData: false,
+                    contentType: false,
+                    dataType: "json",
+                    success: function(res) {
+                        if (res.success === 1 && res.url){
+                            window.editor.cm.replaceSelection('![](' + res.url + ')')
+                        }
+                    }
+                })
+            }
+        }
+        document.addEventListener('paste', uploadImage);
+    }
+
     $(function() {
         editormd.katexURL = {
             js  : "/static/plugins/editor.md/lib/katex/katex.min",
             css : "/static/plugins/editor.md/lib/katex/katex.min"
         };
-        var editor = editormd("document_page_editor", {
+        window.editor = editormd("document_page_editor", {
             width: "100%",
             // height: height,
             path : '/static/plugins/editor.md/lib/',
