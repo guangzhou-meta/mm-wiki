@@ -211,6 +211,9 @@ func initDocumentDir() {
 	beego.SetStaticPath("/images/", ImageAbsDir)
 	// todo
 	beego.SetStaticPath("/images/:space_id/:document_id/", ImageAbsDir)
+
+	beego.SetStaticPath("/attachments/", AttachmentAbsDir)
+	beego.SetStaticPath("/attachments/:space_id/:document_id/", AttachmentAbsDir)
 }
 
 // check upgrade
