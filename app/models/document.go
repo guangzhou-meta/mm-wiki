@@ -563,6 +563,21 @@ func (d *Document) GetDocumentsByLikeName(name string) (documents []map[string]s
 	return
 }
 
+// get document by tag
+func (d *Document) GetDocumentsByTags(name string) (documents []map[string]string, err error) {
+	db := G.DB()
+	var rs *mysql.ResultSet
+	rs, err = db.Query(db.AR().From(Table_Document_Name).Where(map[string]interface{}{
+		"tags Like": "%" + name + "%",
+		"is_delete": Document_Delete_False,
+	}))
+	if err != nil {
+		return
+	}
+	documents = rs.Rows()
+	return
+}
+
 // get document link name and limit
 func (d *Document) GetDocumentsByLikeNameAndLimit(name string, limit int, number int) (documents []map[string]string, err error) {
 	db := G.DB()
