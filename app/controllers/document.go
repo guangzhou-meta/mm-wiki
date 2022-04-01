@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/phachon/mm-wiki/app/services"
 	"regexp"
@@ -606,21 +605,4 @@ func (this *DocumentController) Removetag() {
 
 	this.InfoLog("删除文档 " + documentId + " 标签[" + tag + "] 成功")
 	this.jsonSuccess("删除文档标签成功", nil, "/document/index?document_id="+documentId)
-}
-
-func (this *DocumentController) jsonSuccess2(message string, url string) {
-
-	uploadRes := UploadResponse{
-		Success: 1,
-		Message: message,
-		Url:     url,
-	}
-
-	j, err := json.Marshal(uploadRes)
-	if err != nil {
-		this.Abort(err.Error())
-	} else {
-		this.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
-		this.Abort(string(j))
-	}
 }
