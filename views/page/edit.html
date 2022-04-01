@@ -32,16 +32,11 @@
 
     document.removeEventListener('paste', window.uploadImage);
     if(!window.uploadImage) {
-        window.uploadImage = function (e){
-            let file = null;
+        window.uploadImage = function(e) {
+            var file = null;
             const items = (e.clipboardData || window.clipboardData).items;
-            if (items && items.length) {
-                for (var i = 0; i < items.length; i++) {
-                    if (items[i].type.indexOf('image') !== -1) {
-                        file = items[i].getAsFile();
-                        break;
-                    }
-                }
+            if (items && items.length && items[0].type.indexOf('image') !== -1) {
+                file = items[0].getAsFile();
             }
             if (file) {
                 var f = new FormData()
@@ -55,11 +50,12 @@
                     contentType: false,
                     dataType: "json",
                     success: function(res) {
-                        if (res.success === 1 && res.url){
+                        if (res.success === 1 && res.url) {
                             window.editor.cm.replaceSelection('![](' + res.url + ')')
                         }
                     }
                 })
+                e.preventDefault();
             }
         }
         document.addEventListener('paste', uploadImage);
