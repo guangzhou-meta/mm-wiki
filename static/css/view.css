@@ -1,0 +1,40 @@
+
+.page-view-tag {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.page-view-tag-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: rgb(134, 177, 48);
+    border-radius: 3px;
+    margin-right: 8px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: white;
+    margin-bottom: 0;
+}
+
+.page-view-tag-item-label {
+    margin-right: 8px;
+}
+
+.page-view-tag-item-close {
+    cursor: pointer;
+}
+
+.page-view-add-tag {
+    width: 140px;
+    text-align: center;
+    outline: none;
+    height: 24px;
+    padding: 4px 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
