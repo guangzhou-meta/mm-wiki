@@ -129,6 +129,7 @@ CREATE TABLE `mw_document` (
   `sequence` int(10) NOT NULL DEFAULT '0' COMMENT '排序号(越小越靠前)',
   `create_user_id` int(10) NOT NULL DEFAULT '0' COMMENT '创建用户 id',
   `edit_user_id` int(10) NOT NULL DEFAULT '0' COMMENT '最后修改用户 id',
+  `tags` varchar(255) NOT NULL DEFAULT '' COMMENT '文档标签',
   `is_delete` tinyint(3) NOT NULL DEFAULT '0' COMMENT '是否删除 0 否 1 是',
   `create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_time` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',

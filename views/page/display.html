@@ -22,6 +22,13 @@
                         <i class="fa fa-edit fa-fw"></i>
                         修改于 {{dateFormat $document.update_time "Y/m/d H:i:s"}} By  {{$editUser.username}}（{{$editUser.given_name}}）
                     </p>
+                    <div class="page-view-tag">
+                        {{range $space := .tags}}
+                        <p class="page-view-tag-item">
+                            <span class="page-view-tag-item-label">{{$space}}</span>
+                        </p>
+                        {{end}}
+                    </div>
                     <hr style="margin: 0">
                     <textarea style="display:none;">{{$pageContent}}</textarea>
                 </div>

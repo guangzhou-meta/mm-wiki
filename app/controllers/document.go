@@ -490,3 +490,119 @@ func (this *DocumentController) Delete() {
 	this.InfoLog("删除文档 " + documentId + " 成功")
 	this.jsonSuccess("删除文档成功", "", "/document/index?document_id="+document["parent_id"])
 }
+
+// 添加标签
+func (this *DocumentController) Addtag() {
+	documentId := this.GetString("document_id", "0")
+
+	if documentId == "0" {
+		this.jsonError("没有选择文档！")
+	}
+	document, err := models.DocumentModel.GetDocumentByDocumentId(documentId)
+	if err != nil {
+		this.ErrorLog("添加文档标签失败：" + err.Error())
+		this.jsonError("添加文档标签失败！")
+	}
+	if len(document) == 0 {
+		this.jsonError("文档不存在！")
+	}
+
+	spaceId := document["space_id"]
+	space, err := models.SpaceModel.GetSpaceBySpaceId(document["space_id"])
+	if err != nil {
+		this.ErrorLog("添加文档标签失败：" + err.Error())
+		this.jsonError("添加文档标签失败！")
+	}
+	if len(space) == 0 {
+		this.jsonError("文档空间不存在！")
+	}
+	// check space document privilege
+	_, _, isManager := this.GetDocumentPrivilege(space)
+	if !isManager {
+		this.jsonError("您没有权限删除该空间下的文档！")
+	}
+
+	tag := this.GetString("tag", "")
+	tag = strings.TrimSpace(tag)
+	if tag == "" {
+		this.jsonError("标签不能为空！")
+	}
+
+	var tags []string
+	if document["tags"] != "" {
+		tags = strings.Split(document["tags"], ",")
+	}
+	tags = append(tags, tag)
+
+	_, err = models.DocumentModel.Update(documentId, map[string]interface{}{
+		"tags":         strings.Join(tags, ","),
+		"edit_user_id": this.UserId,
+	}, fmt.Sprintf("添加文档标签[%s]", tag), spaceId)
+
+	if err != nil {
+		this.ErrorLog("添加文档 " + documentId + " 标签[" + tag + "] 失败：" + err.Error())
+		this.jsonError("添加文档标签失败！")
+	}
+
+	this.InfoLog("添加文档 " + documentId + " 标签[" + tag + "] 成功")
+	this.jsonSuccess("添加文档标签成功", nil, "/document/index?document_id="+documentId)
+}
+
+// 删除某个标签
+func (this *DocumentController) Removetag() {
+	documentId := this.GetString("document_id", "0")
+
+	if documentId == "0" {
+		this.jsonError("没有选择文档！")
+	}
+	document, err := models.DocumentModel.GetDocumentByDocumentId(documentId)
+	if err != nil {
+		this.ErrorLog("删除文档标签失败：" + err.Error())
+		this.jsonError("删除文档标签失败！")
+	}
+	if len(document) == 0 {
+		this.jsonError("文档不存在！")
+	}
+
+	spaceId := document["space_id"]
+	space, err := models.SpaceModel.GetSpaceBySpaceId(document["space_id"])
+	if err != nil {
+		this.ErrorLog("删除文档标签失败：" + err.Error())
+		this.jsonError("删除文档标签失败！")
+	}
+	if len(space) == 0 {
+		this.jsonError("文档空间不存在！")
+	}
+	// check space document privilege
+	_, _, isManager := this.GetDocumentPrivilege(space)
+	if !isManager {
+		this.jsonError("您没有权限删除该空间下的文档！")
+	}
+
+	tag := this.GetString("tag", "")
+	tag = strings.TrimSpace(tag)
+	if tag == "" {
+		this.jsonError("标签不能为空！")
+	}
+
+	tags := strings.Split(document["tags"], ",")
+	var newTags []string
+	for _, v := range tags {
+		if v != tag {
+			newTags = append(newTags, v)
+		}
+	}
+
+	_, err = models.DocumentModel.Update(documentId, map[string]interface{}{
+		"tags":         strings.Join(newTags, ","),
+		"edit_user_id": this.UserId,
+	}, fmt.Sprintf("删除文档标签[%s]", tag), spaceId)
+
+	if err != nil {
+		this.ErrorLog("删除文档 " + documentId + " 标签[" + tag + "] 失败：" + err.Error())
+		this.jsonError("删除文档标签失败！")
+	}
+
+	this.InfoLog("删除文档 " + documentId + " 标签[" + tag + "] 成功")
+	this.jsonSuccess("删除文档标签成功", nil, "/document/index?document_id="+documentId)
+}

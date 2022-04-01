@@ -162,7 +162,7 @@ func (this *MainController) Search() {
 	searchDocContents := make(map[string]string)
 	// 默认根据内容搜索
 	// v0.2.1 下线全文搜索功能
-	searchType = "title"
+	//searchType = "title"
 	//if searchType == "title" {
 	//	documents, err = models.DocumentModel.GetDocumentsByLikeName(keyword)
 	//} else {
@@ -181,10 +181,18 @@ func (this *MainController) Search() {
 	//	}
 	//	documents, err = models.DocumentModel.GetDocumentsByDocumentIds(searchDocIds)
 	//}
-	documents, err = models.DocumentModel.GetDocumentsByLikeName(keyword)
-	if err != nil {
-		this.ErrorLog("搜索文档出错：" + err.Error())
-		this.ViewError("搜索文档错误！")
+	if searchType == "tag" {
+		documents, err = models.DocumentModel.GetDocumentsByTags(keyword)
+		if err != nil {
+			this.ErrorLog("搜索文档出错：" + err.Error())
+			this.ViewError("搜索文档错误！")
+		}
+	} else {
+		documents, err = models.DocumentModel.GetDocumentsByLikeName(keyword)
+		if err != nil {
+			this.ErrorLog("搜索文档出错：" + err.Error())
+			this.ViewError("搜索文档错误！")
+		}
 	}
 	// 过滤一下没权限的空间
 	realDocuments := []map[string]string{}
@@ -194,7 +202,7 @@ func (this *MainController) Search() {
 		if _, ok := spaceIdsMap[spaceId]; !ok {
 			continue
 		}
-		if searchType != "title" {
+		if searchType != "title" && searchType != "tag" {
 			searchContent, ok := searchDocContents[documentId]
 			if !ok || searchContent == "" {
 				continue

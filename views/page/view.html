@@ -34,6 +34,15 @@
                             <a name="history" data-link="/document/history?document_id={{$document.document_id}}">&nbsp<i class="fa fa-history item">查看修改历史</i></a>
                             <a onclick="Page.attachment({{$document.document_id}})">&nbsp<i class="fa fa-paperclip item"></i> 查看附件</a>
                         </p>
+                        <div class="page-view-tag">
+                            {{range $space := .tags}}
+                            <p class="page-view-tag-item">
+                                <span class="page-view-tag-item-label">{{$space}}</span>
+                                <span class="page-view-tag-item-close" onclick="removeTag('{{$space}}')">×</span>
+                            </p>
+                            {{end}}
+                            <input class="page-view-add-tag" type="text" maxlength="10" placeholder="添加标签(回车保存)" name="tag"/>
+                        </div>
                     </div>
                     <div class="col-md-4 text-right">
                         <div class="btn-group" role="group" aria-label="...">
@@ -153,5 +162,43 @@
                 pageViewDirToc.hide();
             }
         })
+
+        $(".page-view-add-tag").keydown(function (e){
+            var tag = ''
+            if (e.keyCode === 13 && (tag = e.target.value)) {
+                e.preventDefault()
+                $.ajax({
+                    url:'/document/addtag?document_id={{$document.document_id}}&tag=' + tag,
+                    processData: false,
+                    contentType: false,
+                    type: 'POST',
+                    cache: false,
+                    success: function (res){
+                        if (res.code===1) {
+                            window.location.href = res.redirect.url
+                        }
+                    }
+                })
+                e.target.value = ''
+            }
+        })
     });
+
+    function removeTag(tag){
+        if (tag &&window.confirm('确认移除标签['+tag+']吗？')){
+            $.ajax({
+                url:'/document/removetag?document_id={{$document.document_id}}&tag=' + tag,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                cache: false,
+                dataType: 'json',
+                success: function (res){
+                    if (res.code===1) {
+                        window.location.href = res.redirect.url
+                    }
+                }
+            })
+        }
+    }
 </script>

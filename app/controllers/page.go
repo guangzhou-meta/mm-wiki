@@ -108,6 +108,10 @@ func (this *PageController) View() {
 	this.Data["collection_id"] = collectionId
 	this.Data["page_content"] = documentContent
 	this.Data["parent_documents"] = parentDocuments
+	tags := document["tags"]
+	if tags != "" {
+		this.Data["tags"] = strings.Split(tags, ",")
+	}
 	this.viewLayout("page/view", "document_page")
 }
 
@@ -360,6 +364,10 @@ func (this *PageController) Display() {
 	this.Data["document"] = document
 	this.Data["page_content"] = documentContent
 	this.Data["parent_documents"] = parentDocuments
+	tags := document["tags"]
+	if tags != "" {
+		this.Data["tags"] = strings.Split(tags, ",")
+	}
 	this.viewLayout("page/display", "document_share")
 }
 
