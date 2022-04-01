@@ -36,9 +36,10 @@
                         <td>{{dateFormat $attachment.create_time "Y-m-d H:i:s"}}</td>
                         <td class="center">
                             {{if eq $isDelete true}}
-                            <a onclick="Layers.confirm('确定删除附件吗？', '/attachment/delete?attachment_id={{$attachment.attachment_id}}');"><i class="glyphicon glyphicon-trash"></i></a>
+                            <a onclick="Layers.confirm('确定删除附件吗？', '/attachment/delete?attachment_id={{$attachment.attachment_id}}');" title="删除附件"><i class="glyphicon glyphicon-trash"></i></a>
                             {{end}}
-                            <a href="/attachment/download?attachment_id={{$attachment.attachment_id}}"><i class="glyphicon glyphicon-download"></i></a>
+                            <a href="/attachment/download?attachment_id={{$attachment.attachment_id}}" title="下载附件"><i class="glyphicon glyphicon-download"></i></a>
+                            <a onclick="previewAttachment({{$attachment.path}})" title="预览附件"><i class="glyphicon glyphicon-file"></i></a>
                         </td>
                     </tr>
                 {{end}}
@@ -94,4 +95,8 @@
         console.log('filebatchuploadcomplete', event, files);
     });
     {{end}}
+
+    function previewAttachment(url){
+        window.open(url.replace('attachment/','/attachments/'));
+    }
 </script>
