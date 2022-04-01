@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 type UploadResponse struct {
@@ -82,7 +83,7 @@ func (this *ImageController) Upload() {
 		}
 	}
 	// check file is exists
-	cacheFileName := h.Filename
+	cacheFileName := time.Now().Format("20060102150405") + "_" + h.Filename
 	imageFile := path.Join(saveDir, cacheFileName)
 	ok, _ = utils.File.PathIsExists(imageFile)
 	if ok { // 直接返回对应地址
