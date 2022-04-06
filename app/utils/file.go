@@ -1,11 +1,16 @@
 package utils
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"os/exec"
+	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -143,4 +148,62 @@ func (f *file) WalkDir(dirPth, suffix string) (files []string, err error) {
 		return nil
 	})
 	return files, err
+}
+
+func IsInArr(key string, arr []string) bool {
+	for i := 0; i < len(arr); i++ {
+		if key == arr[i] {
+			return true
+		}
+	}
+	return false
+}
+
+func ConvertToPDF(filePath string, cachePath string) string {
+	commandName := ""
+	var params []string
+	_ = os.MkdirAll(cachePath, os.ModePerm)
+	if runtime.GOOS == "windows" {
+		commandName = "cmd"
+		p, _ := os.Getwd()
+		params = []string{"/c", p + "/windows-office/program/soffice", "--headless", "--invisible", "--convert-to", "pdf", "--outdir", cachePath, filePath}
+	} else if runtime.GOOS == "linux" {
+		commandName = "libreoffice"
+		params = []string{"--invisible", "--headless", "--convert-to", "pdf", "--outdir", cachePath, filePath}
+	}
+	if _, ok := interactiveToexec(commandName, params); ok {
+		resultPath := cachePath + "/" + strings.Split(path.Base(filePath), ".")[0] + ".pdf"
+		if ok, _ := PathExists(resultPath); ok {
+			log.Printf("Convert <%s> to pdf\n", path.Base(filePath))
+			return resultPath
+		} else {
+			return ""
+		}
+	} else {
+		return ""
+	}
+}
+
+func interactiveToexec(commandName string, params []string) (string, bool) {
+	cmd := exec.Command(commandName, params...)
+	buf, err := cmd.Output()
+	w := bytes.NewBuffer(nil)
+	cmd.Stderr = w
+	if err != nil {
+		log.Println("Error: <", err, "> when exec command read out buffer")
+		return "", false
+	} else {
+		return string(buf), true
+	}
+}
+
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }

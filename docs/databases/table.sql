@@ -299,6 +299,7 @@ CREATE TABLE `mw_attachment` (
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '附件名称',
   `path` varchar(100) NOT NULL DEFAULT '' COMMENT '附件路径',
   `source` tinyint(1) NOT NULL DEFAULT '0' COMMENT '附件来源， 0 默认是附件 1 图片',
+  `preview_path` varchar(100) NOT NULL DEFAULT '' COMMENT '预览地址',
   `create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_time` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`attachment_id`),
