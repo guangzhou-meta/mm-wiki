@@ -7,6 +7,7 @@ import (
 	"github.com/phachon/mm-wiki/app/utils"
 	"os"
 	"path"
+	"strings"
 )
 
 type AttachmentController struct {
@@ -74,6 +75,11 @@ func (this *AttachmentController) Page() {
 	this.Data["is_delete"] = isManager
 	this.viewLayout("attachment/page", "attachment")
 }
+
+var (
+	AllOfficeEtx = []string{".doc", ".docx", ".ppt", ".pptx"}
+	IsPPTExt     = []string{".ppt", ".pptx"}
+)
 
 func (this *AttachmentController) Upload() {
 
@@ -156,11 +162,30 @@ func (this *AttachmentController) Upload() {
 		"path":        fmt.Sprintf("attachment/%s/%s/%s", spaceId, documentId, h.Filename),
 		"source":      models.Attachment_Source_Default,
 	}
-	_, err = models.AttachmentModel.Insert(attachment, spaceId)
+	attachmentId, err := models.AttachmentModel.Insert(attachment, spaceId)
 	if err != nil {
 		_ = os.Remove(attachmentFile)
 		this.ErrorLog("上传附件错误: " + err.Error())
 		this.uploadJsonError("附件信息保存失败")
+	}
+
+	// 生成预览pdf
+	extName := path.Ext(h.Filename)
+	if utils.IsInArr(extName, AllOfficeEtx) {
+		go func(spaceId, documentId string, attachmentId int64) {
+			cacheDir := fmt.Sprintf("%s/%s/%s", app.AttachmentPdfAbsDir, spaceId, documentId)
+			previewFilePath := utils.ConvertToPDF(attachmentFile, cacheDir)
+			if previewFilePath == "" {
+				return
+			}
+			if utils.IsInArr(extName, IsPPTExt) { // TODO 如果是PPT，切割成图片展示
+
+			}
+			previewFilePath = strings.ReplaceAll(previewFilePath, app.AttachmentPdfAbsDir, "attachment-preview")
+			models.AttachmentModel.Update(map[string]interface{}{
+				"preview_path": previewFilePath,
+			}, attachmentId)
+		}(spaceId, documentId, attachmentId)
 	}
 
 	this.InfoLog(fmt.Sprintf("文档 %s 上传附件 %s 成功", documentId, h.Filename))
@@ -219,6 +244,17 @@ func (this *AttachmentController) Delete() {
 		this.ErrorLog("删除附件 " + attachmentId + " 失败: " + err.Error())
 		this.jsonError("删除附件失败")
 	}
+
+	// delete attachment preview file
+	go func(attachmentPath string) {
+		if attachmentPath == "" {
+			return
+		}
+		previewFilePath := "data/" + attachmentPath
+		if ok, _ := utils.PathExists(previewFilePath); ok {
+			_ = os.Remove(previewFilePath)
+		}
+	}(attachment["preview_path"])
 
 	// update document log
 	go func(userId string, documentId string, attachmentName string, spaceId string) {

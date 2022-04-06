@@ -39,7 +39,9 @@
                             <a onclick="Layers.confirm('确定删除附件吗？', '/attachment/delete?attachment_id={{$attachment.attachment_id}}');" title="删除附件"><i class="glyphicon glyphicon-trash"></i></a>
                             {{end}}
                             <a href="/attachment/download?attachment_id={{$attachment.attachment_id}}" title="下载附件"><i class="glyphicon glyphicon-download"></i></a>
-                            <a onclick="previewAttachment({{$attachment.path}})" title="预览附件"><i class="glyphicon glyphicon-file"></i></a>
+                            {{if ne $attachment.preview_path ""}}
+                            <a onclick="previewAttachment({{$attachment.preview_path}})" title="预览附件"><i class="glyphicon glyphicon-file"></i></a>
+                            {{end}}
                         </td>
                     </tr>
                 {{end}}
@@ -97,6 +99,6 @@
     {{end}}
 
     function previewAttachment(url){
-        window.open(url.replace('attachment/','/attachments/'));
+        window.open('/'+url);
     }
 </script>

@@ -176,6 +176,15 @@ func (a *Attachment) Insert(attachmentValue map[string]interface{}, spaceId stri
 	return
 }
 
+func (a *Attachment) Update(attachmentValue map[string]interface{}, attachmentId int64) (err error) {
+	attachmentValue["update_time"] = time.Now().Unix()
+	db := G.DB()
+	_, err = db.Exec(db.AR().Update(Table_Attachment_Name, attachmentValue, map[string]interface{}{
+		"attachment_id": attachmentId,
+	}))
+	return
+}
+
 // get all attachments
 func (a *Attachment) GetAttachments() (attachments []map[string]string, err error) {
 

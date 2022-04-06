@@ -20,3 +20,5 @@ install.lock
 .idea/
 
 node_modules/
+
+windows-office/

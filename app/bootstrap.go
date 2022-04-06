@@ -45,6 +45,8 @@ var (
 	AttachmentAbsDir = ""
 
 	SearchIndexAbsDir = ""
+
+	AttachmentPdfAbsDir = ""
 )
 
 func init() {
@@ -185,13 +187,16 @@ func initDocumentDir() {
 	attachmentAbsDir := path.Join(documentAbsDir, "attachment")
 	// search index dir
 	searchIndexAbsDir := path.Join(documentAbsDir, "search-index")
+	// attachment preview cache (pdf)
+	attachmentPdfAbsDir := path.Join(documentAbsDir, "attachment-preview")
 
 	MarkdownAbsDir = markDownAbsDir
 	ImageAbsDir = imagesAbsDir
 	AttachmentAbsDir = attachmentAbsDir
 	SearchIndexAbsDir = searchIndexAbsDir
+	AttachmentPdfAbsDir = attachmentPdfAbsDir
 
-	dirList := []string{MarkdownAbsDir, ImageAbsDir, AttachmentAbsDir, SearchIndexAbsDir}
+	dirList := []string{MarkdownAbsDir, ImageAbsDir, AttachmentAbsDir, SearchIndexAbsDir, AttachmentPdfAbsDir}
 	// create dir
 	for _, dir := range dirList {
 		ok, _ = utils.File.PathIsExists(dir)
@@ -214,6 +219,10 @@ func initDocumentDir() {
 
 	beego.SetStaticPath("/attachments/", AttachmentAbsDir)
 	beego.SetStaticPath("/attachments/:space_id/:document_id/", AttachmentAbsDir)
+
+	beego.SetStaticPath("/attachment-preview/", AttachmentPdfAbsDir)
+	beego.SetStaticPath("/attachment-preview/:space_id/:document_id/", AttachmentPdfAbsDir)
+
 }
 
 // check upgrade
