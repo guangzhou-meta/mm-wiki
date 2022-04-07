@@ -172,7 +172,8 @@ func ConvertToPDF(filePath string, cachePath string) string {
 		params = []string{"--invisible", "--headless", "--convert-to", "pdf", "--outdir", cachePath, filePath}
 	}
 	if _, ok := interactiveToexec(commandName, params); ok {
-		resultPath := cachePath + "/" + strings.Split(path.Base(filePath), ".")[0] + ".pdf"
+		fName := path.Base(filePath)
+		resultPath := cachePath + "/" + fName[:strings.LastIndex(fName, ".")] + ".pdf"
 		if ok, _ := PathExists(resultPath); ok {
 			log.Printf("Convert <%s> to pdf\n", path.Base(filePath))
 			return resultPath
