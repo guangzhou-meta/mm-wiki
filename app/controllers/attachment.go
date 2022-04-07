@@ -154,6 +154,8 @@ func (this *AttachmentController) Upload() {
 		this.uploadJsonError("附件保存失败")
 	}
 
+	extName := path.Ext(h.Filename)
+
 	// insert db
 	attachment := map[string]interface{}{
 		"user_id":     this.UserId,
@@ -161,6 +163,9 @@ func (this *AttachmentController) Upload() {
 		"name":        h.Filename,
 		"path":        fmt.Sprintf("attachment/%s/%s/%s", spaceId, documentId, h.Filename),
 		"source":      models.Attachment_Source_Default,
+	}
+	if extName == ".pdf" {
+		attachment["preview_path"] = fmt.Sprintf("attachments/%s/%s/%s", spaceId, documentId, h.Filename)
 	}
 	attachmentId, err := models.AttachmentModel.Insert(attachment, spaceId)
 	if err != nil {
@@ -170,7 +175,6 @@ func (this *AttachmentController) Upload() {
 	}
 
 	// 生成预览pdf
-	extName := path.Ext(h.Filename)
 	if utils.IsInArr(extName, AllOfficeEtx) {
 		go func(spaceId, documentId string, attachmentId int64) {
 			cacheDir := fmt.Sprintf("%s/%s/%s", app.AttachmentPdfAbsDir, spaceId, documentId)
