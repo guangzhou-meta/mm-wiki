@@ -259,6 +259,10 @@ func (this *PageController) Modify() {
 		this.jsonError("修改文档失败！")
 	}
 
+	go func(documentId string, documentContent string, spaceId string, parentId string) {
+		_ = models.DocumentContentModel.UpdateDocumentContent(documentId, spaceId, parentId, documentContent)
+	}(documentId, documentContent, spaceId, document["parent_id"])
+
 	// send email to follow user
 	if isNoticeUser == "1" {
 		logInfo := this.GetLogInfoByCtx()

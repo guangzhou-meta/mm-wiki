@@ -128,7 +128,7 @@ func (this *MainController) About() {
 func (this *MainController) Search() {
 
 	keyword := strings.TrimSpace(this.GetString("keyword", ""))
-	searchType := this.GetString("search_type", "content")
+	searchType := this.GetString("search_type", "title")
 
 	this.Data["search_type"] = searchType
 	this.Data["keyword"] = keyword
@@ -159,7 +159,7 @@ func (this *MainController) Search() {
 			spaceIdsMap[spaceUser["space_id"]] = true
 		}
 	}
-	searchDocContents := make(map[string]string)
+	//searchDocContents := make(map[string]string)
 	// 默认根据内容搜索
 	// v0.2.1 下线全文搜索功能
 	//searchType = "title"
@@ -181,7 +181,13 @@ func (this *MainController) Search() {
 	//	}
 	//	documents, err = models.DocumentModel.GetDocumentsByDocumentIds(searchDocIds)
 	//}
-	if searchType == "tag" {
+	if searchType == "content" {
+		documents, err = models.DocumentModel.GetDocumentsByContent(keyword)
+		if err != nil {
+			this.ErrorLog("搜索文档出错：" + err.Error())
+			this.ViewError("搜索文档错误！")
+		}
+	} else if searchType == "tag" {
 		documents, err = models.DocumentModel.GetDocumentsByTags(keyword)
 		if err != nil {
 			this.ErrorLog("搜索文档出错：" + err.Error())
@@ -198,17 +204,17 @@ func (this *MainController) Search() {
 	realDocuments := []map[string]string{}
 	for _, document := range documents {
 		spaceId, _ := document["space_id"]
-		documentId, _ := document["document_id"]
+		//documentId, _ := document["document_id"]
 		if _, ok := spaceIdsMap[spaceId]; !ok {
 			continue
 		}
-		if searchType != "title" && searchType != "tag" {
-			searchContent, ok := searchDocContents[documentId]
-			if !ok || searchContent == "" {
-				continue
-			}
-			document["search_content"] = searchContent
-		}
+		//if searchType != "title" && searchType != "tag" {
+		//	searchContent, ok := searchDocContents[documentId]
+		//	if !ok || searchContent == "" {
+		//		continue
+		//	}
+		//	document["search_content"] = searchContent
+		//}
 		realDocuments = append(realDocuments, document)
 	}
 

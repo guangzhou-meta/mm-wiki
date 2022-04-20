@@ -305,3 +305,24 @@ CREATE TABLE `mw_attachment` (
   PRIMARY KEY (`attachment_id`),
   KEY (`document_id`, `source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='附件信息表';
+
+
+-- --------------------------------
+-- 文档内容纯文本缓存表
+-- --------------------------------
+DROP TABLE IF EXISTS `mw_document_content`;
+CREATE TABLE `mw_document_content` (
+  `reference_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '文档内容缓存 id',
+  `document_id` int(10) NOT NULL DEFAULT '0' COMMENT '文档 id',
+  `parent_id` int(10) NOT NULL DEFAULT '0' COMMENT '文档父 id',
+  `space_id` int(10) NOT NULL DEFAULT '0' COMMENT '空间id',
+  `plain_text` varchar(4096) NOT NULL DEFAULT '' COMMENT '文档内容纯文本分片',
+  `segment` int(10) NOT NULL DEFAULT '0' COMMENT '内容分片下标',
+  `is_delete` tinyint(3) NOT NULL DEFAULT '0' COMMENT '是否删除 0 否 1 是',
+  `create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`reference_id`),
+  KEY (`document_id`),
+  KEY (`parent_id`),
+  KEY (`space_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文档内容纯文本缓存表';
