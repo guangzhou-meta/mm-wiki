@@ -11,7 +11,7 @@ import (
 const (
 	Table_Document_Content_Name = "document_content"
 
-	Document_Content_Slice_Size = 200
+	Document_Content_Slice_Size = 3072
 )
 
 type DocumentContent struct {
