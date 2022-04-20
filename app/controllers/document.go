@@ -487,6 +487,11 @@ func (this *DocumentController) Delete() {
 		services.DocIndexService.ForceDelDocIdIndex(documentId)
 	}(documentId)
 
+	// 删除文档内容纯文本
+	go func(documentId string) {
+		models.DocumentContentModel.DeleteDB(documentId)
+	}(documentId)
+
 	this.InfoLog("删除文档 " + documentId + " 成功")
 	this.jsonSuccess("删除文档成功", "", "/document/index?document_id="+document["parent_id"])
 }
