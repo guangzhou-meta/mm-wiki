@@ -578,6 +578,26 @@ func (d *Document) GetDocumentsByTags(name string) (documents []map[string]strin
 	return
 }
 
+// get document by content-plain-text
+func (d *Document) GetDocumentsByContent(name string) (documents []map[string]string, err error) {
+	var documentIds []string
+	documentIds, err = DocumentContentModel.GetDocumentIdsByContent(name)
+	if err != nil {
+		return
+	}
+	if len(documentIds) == 0 {
+		return
+	}
+	db := G.DB()
+	var rs *mysql.ResultSet
+	rs, err = db.Query(db.AR().Raw(fmt.Sprintf("select * from mw_%s where is_delete = 0 and document_id in (%s)", Table_Document_Name, strings.Join(documentIds, ","))))
+	if err != nil {
+		return
+	}
+	documents = rs.Rows()
+	return
+}
+
 // get document link name and limit
 func (d *Document) GetDocumentsByLikeNameAndLimit(name string, limit int, number int) (documents []map[string]string, err error) {
 	db := G.DB()
