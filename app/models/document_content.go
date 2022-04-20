@@ -20,22 +20,11 @@ type DocumentContent struct {
 var DocumentContentModel = DocumentContent{}
 
 func (d *DocumentContent) UpdateDocumentContent(documentId string, spaceId string, parentId string, documentContent string) (err error) {
+	err = d.DeleteDB(documentId)
+	if err != nil {
+		return
+	}
 	db := G.DB()
-	var tx *sql.Tx
-	tx, err = db.Begin(db.Config)
-	if err != nil {
-		return
-	}
-	_, err = db.ExecTx(db.AR().Delete(Table_Document_Content_Name, map[string]interface{}{
-		"document_id": documentId,
-	}), tx)
-	if err != nil {
-		return tx.Rollback()
-	}
-	err = tx.Commit()
-	if err != nil {
-		return
-	}
 	if len(documentContent) == 0 {
 		return nil
 	}
@@ -89,5 +78,22 @@ func (d *DocumentContent) GetDocumentIdsByContent(keyword string) (list []string
 	for _, r := range rs.Row() {
 		list = append(list, r)
 	}
+	return
+}
+
+func (d *DocumentContent) DeleteDB(documentId string) (err error) {
+	db := G.DB()
+	var tx *sql.Tx
+	tx, err = db.Begin(db.Config)
+	if err != nil {
+		return
+	}
+	_, err = db.ExecTx(db.AR().Delete(Table_Document_Content_Name, map[string]interface{}{
+		"document_id": documentId,
+	}), tx)
+	if err != nil {
+		return tx.Rollback()
+	}
+	err = tx.Commit()
 	return
 }
