@@ -95,7 +95,7 @@ func initConfig() {
 		log.Println("init config error: " + err.Error())
 		os.Exit(1)
 	}
-	RootDir = "./"
+	//RootDir = "./"
 	confFile := *confPath
 	if *confPath == "" {
 		confFile = filepath.Join(RootDir, defaultConf)
