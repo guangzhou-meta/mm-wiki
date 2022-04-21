@@ -13,10 +13,22 @@ type TextureRender struct {
 func (r *TextureRender) RenderNode(w io.Writer, node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 	buf := bytes.Buffer{}
 	if node.Next != nil && node.Next.Literal != nil {
-		buf.WriteString("\n")
+		//buf.WriteString("\n")
 	}
-	if node.Literal != nil {
-		buf.Write(node.Literal)
+	literal := node.Literal
+	if literal != nil {
+		var tbuf []byte
+		var l = len(literal)
+		for i, b := range literal {
+			if b == '\n' ||
+				b == '\t' ||
+				b == '\r' ||
+				(b == ' ' && i+1 < l && literal[i+1] == ' ') {
+				continue
+			}
+			tbuf = append(tbuf, b)
+		}
+		buf.Write(tbuf)
 	}
 	if buf.Len() > 0 {
 		_, _ = w.Write(buf.Bytes())
