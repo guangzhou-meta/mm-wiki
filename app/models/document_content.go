@@ -58,10 +58,11 @@ func (d *DocumentContent) getFullLikeSql(keyword string) string {
 	}
 
 	var i = 1
-	var l = len(keyword)
+	var r = []rune(keyword)
+	var l = len(r)
 	var sqlTemplate = "(b.plain_text like '%%%s' and a.segment = (b.segment + 1) and a.plain_text like '%s%%')"
 	for i < l {
-		conditions = append(conditions, fmt.Sprintf(sqlTemplate, keyword[0:i], keyword[i:]))
+		conditions = append(conditions, fmt.Sprintf(sqlTemplate, string(r[0:i]), string(r[i:])))
 		i++
 	}
 
