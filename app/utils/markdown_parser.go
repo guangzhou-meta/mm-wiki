@@ -30,22 +30,22 @@ func (r *TextureRender) RenderHeader(w io.Writer, ast *blackfriday.Node) {
 func (r *TextureRender) RenderFooter(w io.Writer, ast *blackfriday.Node) {
 }
 
-func MarkdownToPlainText(md string, sliceSize int) []string {
-	buf := blackfriday.Run([]byte(md), blackfriday.WithRenderer(&TextureRender{}))
+func MarkdownToPlainText(md []byte, sliceSize int) []string {
+	buf := blackfriday.Run(md, blackfriday.WithRenderer(&TextureRender{}))
 	if len(buf) == 0 {
 		return []string{}
 	}
-	bufStr := string(buf)
+	bufStr := []rune(string(buf))
 	length := len(bufStr)
 	if length < sliceSize {
-		return []string{bufStr}
+		return []string{string(bufStr)}
 	}
 	var list []string
 	for length > 0 {
 		if length < sliceSize {
 			sliceSize = length
 		}
-		list = append(list, bufStr[:sliceSize])
+		list = append(list, string(bufStr[:sliceSize]))
 		bufStr = bufStr[sliceSize:]
 		length = len(bufStr)
 	}

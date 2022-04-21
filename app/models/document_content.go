@@ -28,7 +28,7 @@ func (d *DocumentContent) UpdateDocumentContent(documentId string, spaceId strin
 	if len(documentContent) == 0 {
 		return nil
 	}
-	contents := utils.MarkdownToPlainText(documentContent, Document_Content_Slice_Size)
+	contents := utils.MarkdownToPlainText([]byte(documentContent), Document_Content_Slice_Size)
 	if len(contents) == 0 {
 		return nil
 	}
