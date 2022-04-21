@@ -316,7 +316,7 @@ CREATE TABLE `mw_document_content` (
   `document_id` int(10) NOT NULL DEFAULT '0' COMMENT '文档 id',
   `parent_id` int(10) NOT NULL DEFAULT '0' COMMENT '文档父 id',
   `space_id` int(10) NOT NULL DEFAULT '0' COMMENT '空间id',
-  `plain_text` varchar(4096) NOT NULL DEFAULT '' COMMENT '文档内容纯文本分片',
+  `plain_text` varchar(8192) NOT NULL DEFAULT '' COMMENT '文档内容纯文本分片',
   `segment` int(10) NOT NULL DEFAULT '0' COMMENT '内容分片下标',
   `is_delete` tinyint(3) NOT NULL DEFAULT '0' COMMENT '是否删除 0 否 1 是',
   `create_time` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
