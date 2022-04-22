@@ -76,8 +76,11 @@ func (d *DocumentContent) GetDocumentIdsByContent(keyword string) (list []string
 	if err != nil {
 		return
 	}
+	var id string
 	for _, r := range rs.Rows() {
-		list = append(list, r["document_id"])
+		if id = r["document_id"]; id != "" {
+			list = append(list, id)
+		}
 	}
 	return
 }
