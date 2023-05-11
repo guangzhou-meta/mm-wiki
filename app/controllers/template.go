@@ -37,7 +37,7 @@ func (this *TemplateController) Prepare() {
 	this.Data["version"] = app.Version
 	this.Data["copyright"] = app.CopyRight
 
-	if this.controllerName == "author" {
+	if this.controllerName == "author" || this.controllerName == "openapi" {
 		return
 	}
 

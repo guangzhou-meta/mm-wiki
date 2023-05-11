@@ -95,6 +95,7 @@ func initConfig() {
 		log.Println("init config error: " + err.Error())
 		os.Exit(1)
 	}
+	RootDir = "./"
 	//RootDir = "./"
 	confFile := *confPath
 	if *confPath == "" {
@@ -136,7 +137,7 @@ func initConfig() {
 	logs.SetLogFuncCall(true)
 }
 
-//init db
+// init db
 func initDB() {
 	host := beego.AppConfig.String("db::host")
 	port, _ := beego.AppConfig.Int("db::port")

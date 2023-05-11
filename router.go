@@ -21,6 +21,7 @@ func initRouter() {
 
 	beego.Router("/", &controllers.MainController{}, "*:Index")
 	beego.Router("/author", &controllers.AuthorController{}, "*:Index")
+	beego.Router("/openapi", &controllers.OpenApiController{}, "*:Index")
 	beego.AutoRouter(&controllers.AuthorController{})
 	beego.AutoRouter(&controllers.MainController{})
 	beego.AutoRouter(&controllers.SpaceController{})
@@ -31,6 +32,7 @@ func initRouter() {
 	beego.AutoRouter(&controllers.PageController{})
 	beego.AutoRouter(&controllers.ImageController{})
 	beego.AutoRouter(&controllers.AttachmentController{})
+	beego.AutoRouter(&controllers.OpenApiController{})
 
 	systemNamespace := beego.NewNamespace("/system",
 		beego.NSAutoRouter(&systemControllers.MainController{}),
